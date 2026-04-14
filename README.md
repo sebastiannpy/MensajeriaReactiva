@@ -1,32 +1,27 @@
-# Chat reactivo básico
+# Chat Reactivo Hexagonal
 
-Proyecto mínimo con:
+Proyecto backend en Spring Boot WebFlux con arquitectura hexagonal.
+
+## Requisitos
 - Java 21
+- PostgreSQL
 - Maven
-- Spring WebFlux
-- PostgreSQL con R2DBC
 
-## Base de datos usada
+## Base de datos esperada
 Tablas:
-- usuarios(id, username)
-- mensajes(id, remitente_id, receptor_id, contenido, fecha_envio)
+- roles
+- usuarios
+- mensajes
 
-## Configuración
-Editar `src/main/resources/application.yaml` con:
-- nombre de la base
-- usuario de PostgreSQL
-- contraseña
+## Swagger
+- http://localhost:8081/swagger-ui.html
 
-## Endpoints
-- `GET /api/usuarios`
-- `POST /api/usuarios`
-- `POST /api/mensajes`
-- `GET /api/mensajes?usuario1={id1}&usuario2={id2}`
-- `GET /api/mensajes/stream/{usuarioId}`
-
-## Probar
-1. Ejecutar la app.
-2. Abrir `http://localhost:8080`.
-3. Cargar usuarios.
-4. Abrir chat.
-5. Enviar mensajes.
+## Endpoints principales
+- POST /api/auth/login
+- POST /api/usuarios
+- PUT /api/usuarios/{id}
+- PATCH /api/usuarios/{id}/inactivar
+- CRUD /api/roles
+- POST /api/mensajes
+- GET /api/mensajes?usuario1=...&usuario2=...
+- GET /api/mensajes/stream/{usuarioId}
