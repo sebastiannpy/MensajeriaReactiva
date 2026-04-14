@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: chat-reactivo-hexagonal
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/reactivo
+    username: postgres
+    password: 1234
+
+server:
+  port: 8082
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
