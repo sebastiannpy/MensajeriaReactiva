@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: chat-reactivo-hexagonal
+  r2dbc:
+    url: r2dbc:postgresql://aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslMode=require
+    username: postgres.tgkemcpujpzrkupblptm
+    password: "H%fUyQy&j?3%5&n"
+  webflux:
+    problemdetails:
+      enabled: false
+
+server:
+  port: 8081
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  webjars:
+    prefix: ""
