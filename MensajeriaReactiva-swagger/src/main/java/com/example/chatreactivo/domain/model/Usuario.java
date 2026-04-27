@@ -1,11 +1,16 @@
 package com.example.chatreactivo.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public class Usuario {
     private UUID id;
     private String username;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    
     private String nombre;
     private String correo;
     private Boolean activo;
