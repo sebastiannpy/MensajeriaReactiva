@@ -87,3 +87,11 @@ El proyecto debe cumplir con los siguientes requisitos técnicos:
 - Evitar lógica de negocio dentro de los controladores.
 - Centralizar la lógica de negocio en la capa de servicios o casos de uso.
 - Mantener una estructura de proyecto organizada por capas.
+
+# 5. Distribución de responsabilidades técnicas del proyecto
+
+- **Andrés:** encargado de la implementación de seguridad del sistema, específicamente en la protección de contraseñas mediante criptografía/hash con BCrypt, evitando que las credenciales de los usuarios se almacenen en texto plano dentro de la base de datos.
+  
+- **Sebastián:** implementación de tareas programables mediante servicios Cron para ejecutar procesos automáticos en horarios definidos.
+  
+- **Miguel:** implementación de colas de mensajería para independizar procesos mediante tecnologías como Kafka, RabbitMQ o ActiveMQ.
