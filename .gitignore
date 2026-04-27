@@ -1,0 +1,15 @@
+# Maven / Java
+**/target/
+
+# Spring Tool Suite / Eclipse
+**/.classpath
+**/.project
+**/.settings/
+**/.factorypath
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
