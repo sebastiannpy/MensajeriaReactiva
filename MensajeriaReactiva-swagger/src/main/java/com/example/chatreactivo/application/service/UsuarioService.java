@@ -4,6 +4,7 @@ import com.example.chatreactivo.domain.model.Usuario;
 import com.example.chatreactivo.domain.ports.in.UsuarioUseCase;
 import com.example.chatreactivo.domain.ports.out.RolRepositoryPort;
 import com.example.chatreactivo.domain.ports.out.UsuarioRepositoryPort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,10 +16,16 @@ public class UsuarioService implements UsuarioUseCase {
 
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final RolRepositoryPort rolRepositoryPort;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepositoryPort usuarioRepositoryPort, RolRepositoryPort rolRepositoryPort) {
+    public UsuarioService(
+            UsuarioRepositoryPort usuarioRepositoryPort,
+            RolRepositoryPort rolRepositoryPort,
+            PasswordEncoder passwordEncoder
+    ) {
         this.usuarioRepositoryPort = usuarioRepositoryPort;
         this.rolRepositoryPort = rolRepositoryPort;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -38,7 +45,12 @@ public class UsuarioService implements UsuarioUseCase {
                     if (!tuple.getT2()) {
                         return Mono.error(new RuntimeException("El rol no existe"));
                     }
-                    return usuarioRepositoryPort.save(tuple.getT1());
+
+                    Usuario usuarioValidado = tuple.getT1();
+                    String passwordEncriptada = passwordEncoder.encode(usuarioValidado.getPassword());
+                    usuarioValidado.setPassword(passwordEncriptada);
+
+                    return usuarioRepositoryPort.save(usuarioValidado);
                 });
     }
 
@@ -60,7 +72,10 @@ public class UsuarioService implements UsuarioUseCase {
                 .flatMap(actual -> {
                     actual.setNombre(usuario.getNombre());
                     actual.setCorreo(usuario.getCorreo());
-                    actual.setPassword(usuario.getPassword());
+
+                    String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+                    actual.setPassword(passwordEncriptada);
+
                     actual.setRolId(usuario.getRolId());
                     return usuarioRepositoryPort.save(actual);
                 });
