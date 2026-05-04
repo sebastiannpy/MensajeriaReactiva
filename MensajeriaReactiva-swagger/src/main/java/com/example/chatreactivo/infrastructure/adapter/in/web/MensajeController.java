@@ -13,10 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @RestController
@@ -73,8 +75,20 @@ public class MensajeController {
                 schema = @Schema(implementation = Mensaje.class)))
     })
     @GetMapping(value = "/stream/{usuarioId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Mensaje> escucharMensajes(
+    public Flux<ServerSentEvent<Object>> escucharMensajes(
         @Parameter(description = "UUID del usuario que escucha mensajes", required = true) @PathVariable UUID usuarioId) {
-        return mensajeUseCase.escucharMensajes(usuarioId);
+
+        Flux<ServerSentEvent<Object>> mensajes = mensajeUseCase.escucharMensajes(usuarioId)
+                .map(mensaje -> ServerSentEvent.builder()
+                        .event("mensaje")
+                        .data(mensaje)
+                        .build());
+
+        Flux<ServerSentEvent<Object>> keepAlive = Flux.interval(Duration.ofSeconds(10))
+                .map(tick -> ServerSentEvent.builder()
+                        .comment("keep-alive")
+                        .build());
+
+        return Flux.merge(mensajes, keepAlive);
     }
 }

@@ -1,13 +1,18 @@
 spring:
   application:
     name: chat-reactivo-hexagonal
+
   r2dbc:
     url: r2dbc:postgresql://aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslMode=require
     username: postgres.tgkemcpujpzrkupblptm
     password: "H%fUyQy&j?3%5&n"
+
   webflux:
     problemdetails:
       enabled: false
+
+  activemq:
+    broker-url: vm://chat-broker?broker.persistent=false&broker.useShutdownHook=false
 
 server:
   port: 8081
@@ -19,3 +24,7 @@ springdoc:
     path: /v3/api-docs
   webjars:
     prefix: ""
+
+app:
+  messaging:
+    queue-name: chat.mensajes.queue

@@ -2,11 +2,12 @@ package com.example.chatreactivo.application.service;
 
 import com.example.chatreactivo.domain.model.Mensaje;
 import com.example.chatreactivo.domain.ports.in.MensajeUseCase;
+import com.example.chatreactivo.domain.ports.out.MensajeQueuePort;
 import com.example.chatreactivo.domain.ports.out.MensajeRepositoryPort;
+import com.example.chatreactivo.infrastructure.realtime.MensajeRealtimeStream;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -15,18 +16,25 @@ import java.util.UUID;
 public class MensajeService implements MensajeUseCase {
 
     private final MensajeRepositoryPort mensajeRepositoryPort;
-    private final Sinks.Many<Mensaje> sink;
+    private final MensajeQueuePort mensajeQueuePort;
+    private final MensajeRealtimeStream mensajeRealtimeStream;
 
-    public MensajeService(MensajeRepositoryPort mensajeRepositoryPort) {
+    public MensajeService(
+            MensajeRepositoryPort mensajeRepositoryPort,
+            MensajeQueuePort mensajeQueuePort,
+            MensajeRealtimeStream mensajeRealtimeStream
+    ) {
         this.mensajeRepositoryPort = mensajeRepositoryPort;
-        this.sink = Sinks.many().multicast().onBackpressureBuffer();
+        this.mensajeQueuePort = mensajeQueuePort;
+        this.mensajeRealtimeStream = mensajeRealtimeStream;
     }
 
     @Override
     public Mono<Mensaje> enviar(Mensaje mensaje) {
         mensaje.setFechaEnvio(OffsetDateTime.now());
+
         return mensajeRepositoryPort.save(mensaje)
-                .doOnNext(guardado -> sink.tryEmitNext(guardado))
+                .flatMap(guardado -> mensajeQueuePort.publicar(guardado).thenReturn(guardado))
                 .onErrorResume(error -> Mono.error(new RuntimeException("No fue posible enviar el mensaje")));
     }
 
@@ -39,7 +47,6 @@ public class MensajeService implements MensajeUseCase {
 
     @Override
     public Flux<Mensaje> escucharMensajes(UUID usuarioId) {
-        return sink.asFlux()
-                .filter(m -> usuarioId.equals(m.getRemitenteId()) || usuarioId.equals(m.getReceptorId()));
+        return mensajeRealtimeStream.streamParaUsuario(usuarioId);
     }
 }
