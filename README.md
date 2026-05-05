@@ -92,6 +92,6 @@ El proyecto debe cumplir con los siguientes requisitos técnicos:
 
 - **Andrés:** encargado de la implementación de seguridad del sistema, específicamente en la protección de contraseñas mediante criptografía/hash con BCrypt, evitando que las credenciales de los usuarios se almacenen en texto plano dentro de la base de datos.
   
-- **Sebastián:** implementación de tareas programables mediante servicios Cron para ejecutar procesos automáticos en horarios definidos.
+- **Sebastián:** implementación de inicio de sesión con Tokens y ASR.
   
 - **Miguel:** implementación de colas de mensajería para independizar procesos mediante tecnologías como Kafka, RabbitMQ o ActiveMQ.
